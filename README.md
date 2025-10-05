@@ -1,6 +1,9 @@
 # UserPasswordExpiration.ps1
 
-A small interactive PowerShell utility to view and manage Microsoft Entra (Azure AD) password expiration settings for your tenant and users.
+<img src=https://raw.githubusercontent.com/ITAutomator/Assets/main/UserPasswwordExpiration/UserPasswordExpiration.png alt="screenshot" width="300"/>
+ 
+A small interactive PowerShell utility to view and manage Microsoft Entra (Azure AD) password expiration settings for your tenant and users.  
+This is useful since Entra ID does not provide any interface to control or view these settings.  
 
 ## What this script does
 
