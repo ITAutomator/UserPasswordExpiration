@@ -63,6 +63,10 @@ If (-not(IsAdmin))
 }
 #>
 <###### Version History
+2026-04-18
+PromptForString - Added Start-Sleep and ensure SendKeys works correctly with special characters
+2026-04-14
+LoadModule Removed the Verbose option from the user-based installer
 2026-03-05
 FolderPruneToSize -Folder "C:\LogFolder" -MaxMB 5
 FolderPruneToCount -Folder "C:\LogFolder" -MaxCount 5
@@ -1939,7 +1943,11 @@ function PromptForString ($Prompt = "Enter your choice", $defaultValue = "")
         # $Prompt = $Prompt.PadLeft($defaultPrompt.Length - 2, ' ') # Line up the 2 prompts
         # Pre-type the default value
         $wsh = New-Object -ComObject WScript.Shell
-        $wsh.SendKeys($defaultValue)  
+        # Regex to find any of the special characters: + ^ % ~ ( ) [ ] { }
+        # It wraps each match in curly braces.
+        $escapedValue = [regex]::Replace($defaultValue, '[+^%~()\[\]{}]', '{$0}')
+        Start-Sleep -Milliseconds 200
+        $wsh.SendKeys($escapedValue)
     }
     $userInput = Read-Host -Prompt $Prompt
     # Use the default value if the user presses Enter without typing anything
@@ -4191,7 +4199,7 @@ Function LoadModule ($m, $providercheck = "", $checkver = $true) #nuget
                         $msg = "About to run Install-Module $($m). You are not an admin, is that OK? (not recommended)"
                         if (AskForChoice -Message $msg) {
                             write-verbose "Module $($m) is available online, downloading to disk (not an admin so as user)..."
-                            Install-Module -Name $m -Force -Verbose -Scope CurrentUser
+                            Install-Module -Name $m -Force -Scope CurrentUser
                         }
                         else {
                             write-verbose "Module $($m) not installed (user aborted)"
